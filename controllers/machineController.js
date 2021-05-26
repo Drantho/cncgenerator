@@ -23,4 +23,27 @@ router.post('/', (req, res) => {
     });
 });
 
+router.put('/:id', (req, res) => {
+    const machine = req.body;
+
+    Machine.findByIdAndUpdate(req.params.id, machine)
+    .then(response => {
+        res.json(response);
+    })
+    .catch(err => {
+        res.status(500).json(err);
+    })
+});
+
+router.delete('/:id', (req, res) => {
+    Machine.deleteOne({
+        _id:req.params.id
+    })
+    .then(response => {
+        res.json(response);
+    })
+    .catch(err => {
+        res.status(500).json(err);
+    });
+});
 module.exports = router;
