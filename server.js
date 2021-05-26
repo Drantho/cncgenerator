@@ -1,21 +1,23 @@
 const express = require('express');
 const app = express();
-const bodyParser = require('body-parser');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const PORT = process.env.PORT || 4000;
 const path = require('path');
+const compression = require("compression");
 
+const routes = require("./controllers/routes.js");
 
 app.use(cors());
-app.use(bodyParser.json());
+app.use(compression());
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
+app.use(express.json({ limit: '50mb', extended: true, parameterLimit: 50000 }));
+app.use('/api', routes);
 
-var uristring =
-    process.env.MONGODB_URI ||
-    'mongodb://localhost/test';
-
-mongoose.connect(uristring, {useNewUrlParser: true});
-
+mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost/cnc", {
+  useNewUrlParser: true,
+  useFindAndModify: false
+});
 
 const connection = mongoose.connection;
 
@@ -29,7 +31,6 @@ if (process.env.NODE_ENV === 'production') {
         res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
     });
 }
-
 
 app.listen(PORT, function () {
     console.log("Server is running on Port: " + PORT);
